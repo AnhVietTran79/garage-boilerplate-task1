@@ -34,7 +34,10 @@ export function CreateNoteForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+    >
       <div className="space-y-1.5">
         <label htmlFor="title" className="text-sm font-medium">
           Title
