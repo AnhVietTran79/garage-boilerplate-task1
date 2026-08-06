@@ -56,6 +56,21 @@ service cloud.firestore {
       allow delete: if false; // soft-delete only — set deletedAt field instead
     }
 
+    // notes/{noteId}
+    // Each user can only read and write their own notes.
+    // Created via the createNote Server Action (Admin SDK bypasses these rules);
+    // these rules protect the client SDK read path used by NotesList.
+    match /notes/{noteId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.uid) && notDeleted();
+
+      allow create: if isAuthenticated() && isOwner(request.resource.data.uid);
+
+      allow update: if isAuthenticated() && isOwner(resource.data.uid)
+        && request.resource.data.uid == resource.data.uid;  // uid is immutable
+
+      allow delete: if false; // soft-delete only — set deletedAt field instead
+    }
+
     // Add new collection rules above this comment using the /firebase-collection skill.
 
     // ── Default deny ───────────────────────────────────────────────────────
