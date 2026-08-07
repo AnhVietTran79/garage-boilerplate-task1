@@ -23,7 +23,9 @@ export function NotesList() {
   if (loading) return <LoadingSpinner />
   if (error) return <EmptyState title="Could not load notes" description={error.message} />
   if (notes.length === 0) {
-    return <EmptyState title="No notes yet" description="Create your first note using the form above." />
+    return (
+      <EmptyState title="No notes yet" description="Create your first note using the form above." />
+    )
   }
 
   return (
@@ -31,7 +33,7 @@ export function NotesList() {
       {notes.map((note) => (
         <li key={note.id} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h3 className="font-medium">{note.title}</h3>
-          <p className="mt-1 text-sm text-zinc-500 whitespace-pre-wrap">{note.body}</p>
+          <p className="mt-1 text-sm whitespace-pre-wrap text-zinc-500">{note.body}</p>
         </li>
       ))}
     </ul>

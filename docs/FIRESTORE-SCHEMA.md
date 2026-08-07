@@ -12,12 +12,13 @@ When adding a new collection, use the `/firebase-collection` Claude Code skill.
 Every document in every collection **must** include a `_schemaVersion` field:
 
 ```typescript
-_schemaVersion: 1  // increment when doing a breaking schema change
+_schemaVersion: 1; // increment when doing a breaking schema change
 ```
 
 This enables **lazy migration** — when a document is read, check `_schemaVersion` and migrate on the fly if it's behind current. See the `/evolve-schema` skill for the full migration workflow.
 
 **Rules:**
+
 - `_schemaVersion` is always `1` on creation
 - Non-breaking changes (adding optional fields with defaults) keep the same version
 - Breaking changes (rename, remove, type change) increment the version and require a migration function
@@ -30,16 +31,16 @@ This enables **lazy migration** — when a document is read, check `_schemaVersi
 **Path:** `/users/{userId}`
 **Access:** Owner-only (user can read/write their own document; admins can read all)
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `uid` | `string` | Yes | Firebase Auth UID (same as document ID) |
-| `email` | `string` | Yes | User's email address |
-| `displayName` | `string \| null` | Yes | Display name from Auth or profile |
-| `photoURL` | `string \| null` | Yes | Profile photo URL |
-| `role` | `'user' \| 'admin'` | Yes | User role — immutable by user after creation |
-| `createdAt` | `Timestamp` | Yes | When the document was created |
-| `updatedAt` | `Timestamp` | Yes | When the document was last updated |
-| `_schemaVersion` | `1` | Yes | Schema version for lazy migration |
+| Field            | Type                | Required | Description                                  |
+| ---------------- | ------------------- | -------- | -------------------------------------------- |
+| `uid`            | `string`            | Yes      | Firebase Auth UID (same as document ID)      |
+| `email`          | `string`            | Yes      | User's email address                         |
+| `displayName`    | `string \| null`    | Yes      | Display name from Auth or profile            |
+| `photoURL`       | `string \| null`    | Yes      | Profile photo URL                            |
+| `role`           | `'user' \| 'admin'` | Yes      | User role — immutable by user after creation |
+| `createdAt`      | `Timestamp`         | Yes      | When the document was created                |
+| `updatedAt`      | `Timestamp`         | Yes      | When the document was last updated           |
+| `_schemaVersion` | `1`                 | Yes      | Schema version for lazy migration            |
 
 **Creation:** Auto-created by `AuthProvider` on first sign-in via `syncUserProfile()`.
 **Deletion:** Hard-delete is disabled in security rules. Use `deletedAt` field for soft-delete.
@@ -51,15 +52,15 @@ This enables **lazy migration** — when a document is read, check `_schemaVersi
 **Path:** `/notes/{noteId}`
 **Access:** Owner-only (a user can read/create/update only documents where `uid` matches their own)
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Firestore document ID (auto-generated, hydrated on read) |
-| `uid` | `string` | Yes | Owner's Firebase Auth UID — the field security rules match on |
-| `title` | `string` | Yes | Note title, 1–200 characters |
-| `body` | `string` | Yes | Note content, up to 10,000 characters |
-| `createdAt` | `Timestamp` | Yes | When the note was created |
-| `updatedAt` | `Timestamp` | Yes | When the note was last updated |
-| `_schemaVersion` | `1` | Yes | Schema version for lazy migration |
+| Field            | Type        | Required | Description                                                   |
+| ---------------- | ----------- | -------- | ------------------------------------------------------------- |
+| `id`             | `string`    | Yes      | Firestore document ID (auto-generated, hydrated on read)      |
+| `uid`            | `string`    | Yes      | Owner's Firebase Auth UID — the field security rules match on |
+| `title`          | `string`    | Yes      | Note title, 1–200 characters                                  |
+| `body`           | `string`    | Yes      | Note content, up to 10,000 characters                         |
+| `createdAt`      | `Timestamp` | Yes      | When the note was created                                     |
+| `updatedAt`      | `Timestamp` | Yes      | When the note was last updated                                |
+| `_schemaVersion` | `1`         | Yes      | Schema version for lazy migration                             |
 
 **Creation:** Via the `createNote` Server Action (`frontend/src/features/notes/actions/notes.actions.ts`), which authenticates with `requireAuth()`, validates with Zod, and writes with the Admin SDK — `uid` is taken from the session, never from client input.
 **Reads:** `NotesList` subscribes with the client SDK filtered by `where('uid', '==', user.uid)`, so the security rules above are what actually enforce ownership.
